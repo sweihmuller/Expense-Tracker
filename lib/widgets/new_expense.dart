@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/widgets/expenses.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
+  const NewExpense({super.key, required this.onAddExpense});
+
+  final void Function(Expense expense) onAddExpense;
+
   @override
   State<StatefulWidget> createState() {
     return _NewExpenseState();
@@ -38,6 +42,44 @@ class _NewExpenseState extends State<NewExpense> {
 
   void _saveAmountInput(String inputValue) {
     _enteredAmount = inputValue;
+  }
+
+  void _submitDataExpense() {
+    final double? enteredAmount = double.tryParse(_enteredAmount);
+    final bool amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
+    if (_titleController.text.trim().isEmpty ||
+        amountIsInvalid ||
+        _selectedDate == null) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Invalid input'),
+          content: const Text(
+            'Please make sure a valid title, amount, date and category were selected',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+              },
+              child: const Text('Okay.'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    Expense expense = Expense(
+      title: _titleController.text,
+      amount: enteredAmount,
+      date: _selectedDate!,
+      category: _selectedCategory,
+    );
+
+    widget.onAddExpense(expense);
+
+    Navigator.pop(context, expense);
   }
 
   @override
@@ -108,8 +150,7 @@ class _NewExpenseState extends State<NewExpense> {
               const Spacer(),
               ElevatedButton(
                 onPressed: () {
-                  print(_titleController.text);
-                  print(_enteredAmount);
+                  _submitDataExpense();
                 },
                 child: const Text('Save expense'),
               ),
