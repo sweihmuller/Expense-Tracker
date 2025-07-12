@@ -55,8 +55,6 @@ class _NewExpenseState extends State<NewExpense> {
   }
 
   void _submitDataExpense() {
-    final double? enteredAmount = double.tryParse(_enteredAmount);
-    final bool amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
     if (!_validateUserInput(
       _titleController.text,
       _enteredAmount,
@@ -97,7 +95,7 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 48, 16, 16),
       child: Column(
         children: [
           TextField(
