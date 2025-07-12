@@ -44,12 +44,24 @@ class _NewExpenseState extends State<NewExpense> {
     _enteredAmount = inputValue;
   }
 
+  bool _validateUserInput(String title, String amount, DateTime? selectedDate) {
+    final double? enteredAmount = double.tryParse(amount);
+    final bool amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
+    if (title.trim().isEmpty || amountIsInvalid || _selectedDate == null) {
+      return false;
+    }
+
+    return true;
+  }
+
   void _submitDataExpense() {
     final double? enteredAmount = double.tryParse(_enteredAmount);
     final bool amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
-    if (_titleController.text.trim().isEmpty ||
-        amountIsInvalid ||
-        _selectedDate == null) {
+    if (!_validateUserInput(
+      _titleController.text,
+      _enteredAmount,
+      _selectedDate,
+    )) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -72,7 +84,7 @@ class _NewExpenseState extends State<NewExpense> {
 
     Expense expense = Expense(
       title: _titleController.text,
-      amount: enteredAmount,
+      amount: double.tryParse(_enteredAmount)!,
       date: _selectedDate!,
       category: _selectedCategory,
     );
